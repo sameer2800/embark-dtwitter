@@ -37,16 +37,16 @@ class CreateUser extends Component {
 
     this.setState({ isLoading: true });
     const { username, description } = this.state;
-
+   // DTwitter.methods.userExists(web3.utils.keccak256(value)).call()
     try {
-      
+      const createAccount = DTwitter.methods.createAccount(username, description);
       // set up our contract method with the input values from the form
 
       // get a gas estimate before sending the transaction
-
+      const gasEstimate = await createAccount.estimateGas({ from: web3.eth.defaultAccount });
       // send the transaction to create an account with our gas estimate
       // (plus a little bit more in case the contract state has changed).
-
+      const result = await createAccount.send({ from: web3.eth.defaultAccount,  gas: gasEstimate + 1000 });
       // check result status. if status is false or '0x0', show user the tx details to debug error
       // if (result.status && !Boolean(result.status.toString().replace('0x', ''))) { // possible result values: '0x0', '0x1', or false, true
       //   return this.setState({ isLoading: false, error: 'Error executing transaction, transaction details: ' + JSON.stringify(result) });
@@ -83,8 +83,16 @@ class CreateUser extends Component {
     const input = e.target.name;
     const value = e.target.value;
 
-    state[input] = value;
+    if (input === 'username') {
+      this.setState({username : value});
+    }
+    else {
+      this.setState({description : value});
+    }
 
+    //state[input] = value;
+    //this.setState({username : value});
+    console.log("hello" + this.state.username)
     if (input === 'username') {
 
       state.usernameHasChanged = true;
@@ -93,29 +101,6 @@ class CreateUser extends Component {
 
         // ensure we're not already loading the last lookup
         if (!this.state.isLoading) {
-
-          // call the userExists method in our contract asynchronously
-          // .then((exists) => {
-            
-          //   // stop loading state
-          //   state.isLoading = false;
-
-          //   // show error to user if user doesn't exist
-          //   state.error = exists ? 'Username not available' : '';
-            
-          //   this.setState(state);
-
-          // }).catch((err) => {
-            
-          //   // stop loading state
-          //   state.isLoading = false;
-
-          //   // show error message to user
-          //   state.error = err.message;
-
-          //   this.setState(state);
-          // });
-
           // set loading state while checking the contract
           state.isLoading = true;
         }
@@ -125,7 +110,7 @@ class CreateUser extends Component {
       }
     }
 
-    this.setState(state);
+   
   }
   //#endregion
 
@@ -182,20 +167,20 @@ class CreateUser extends Component {
               <FieldGroup
                 type="text"
                 value={ this.state.username }
-                disabled={ isLoading }
+              //  disabled={ isLoading }
                 placeholder="germany2018champs"
                 onKeyPress={ (e) => e.key === '@' || e.key === ' ' ? e.preventDefault() : true }
                 onChange={ (e) => this._handleChange(e) }
                 name="username"
                 autoComplete="off"
                 label="Desired username"
-                validationState={ validationState }
-                hasFeedback={ true }
-                help={ feedback }
+           //     validationState={ validationState }
+           //     hasFeedback={ true }
+          //      help={ feedback }
                 inputAddOn={
                   {
                     location: 'before',
-                    addOn: '@'
+                    addOn: '@!'
                   }
                 }
               />
